@@ -1,0 +1,94 @@
+# stream.gplt
+# M. Bernreuther <bernreuther@hlrs.de>
+
+#set encoding default
+#set encoding iso_8859_1
+set encoding utf8
+
+#datfile_ref= system("ls stream_ref*.dat|tail -n 1")
+
+#set size ratio -1
+
+#set border
+set grid
+set zeroaxis
+set key right top
+
+set style data linespoints
+
+set logscale xy
+
+set title 'Sch{\366}nauer Triad Stream benchmark, visgs (SandyBridge)'
+
+# set terminal postscript eps enhanced color
+set terminal pdf
+
+set output 'streamBW.eps'
+
+set xlabel 'I/O transfer volume [Bytes]'
+set ylabel '[Byte/s]'
+
+#xmin=
+#xmax=
+#ymin=1.e10
+ymin=5.e9
+ymax=2.E11
+
+#set xrange [xmin:xmax]
+set yrange [ymin:ymax]
+
+# 32 kB (Level 1 Cache)
+set arrow from 32768,ymin to 32768,ymax nohead lt 0 lc 1 lw 2
+# 256 kB (Level 2 Cache)
+set arrow from 262144,ymin to 262144,ymax nohead lt 0 lc 1  lw 2
+# 8 MB (Level 3 Cache)
+set arrow from 8388608,ymin to 8388608,ymax nohead lt 0 lc 1 lw 2
+
+# Memorybandwidth
+# DDR3-1333: 10.667 GB/s
+set arrow from 10,10.667e9 to 1.e9,10.667e9 nohead lt 0 lc 1 lw 2
+
+## to other socket (NUMA): QPI
+## 25.6 GByte/s QPI bandwidth for Intel Nehalem
+## 32 GByte/s QPI bandwidth for Intel SandyBridge
+## 38.4 GByte/s QPI bandwidth for Intel Haswell
+#set arrow from 10,32e9 to 1.e9,32e9 nohead lt 0 lc 1 lw 2
+
+
+# plot datfile_ref u 8:13 notitle lw 4
+
+#plot 'stream_ref.dat' u 6:11 title 'reference (Compiler optimized)' lw 4 \
+#   , 'stream_sse2.dat' u 6:11 title 'SSE2 intrinsics' lw 4 \
+#   , 'stream_avx.dat' u 6:11 title 'AVX intrinsics (store)' lw 4 \
+#   , 'stream_avx_stream.dat' u 6:11 title 'AVX intrinsics (stream)' lw 4
+
+unset arrow
+
+set output 'streamFLOPs.pdf'
+
+set xlabel 'N_{eff}'
+set ylabel '[FLOP/s]'
+
+#xmin=1
+#xmax=1.e7
+#ymin=5.e8
+ymin=1.e8
+ymax=2.08E10
+
+#set xrange [xmin:xmax]
+set yrange [ymin:ymax]
+
+# SandyBridge 3.4GHz
+# non-AVX(2DFLOP/cycl): 6.8 GFLOPs peak
+set arrow from 1,6.8e9 to 1.e7,6.8e9 nohead lt 0 lc 1 lw 2
+# AVX(8DFLOP/cycl): 27.2 GFLOPs peak
+set arrow from 1,27.2e9 to 1.e7,27.2e9 nohead lt 0 lc 1 lw 2
+
+#plot datfile_ref u 7:12 notitle lw 4
+
+plot 'no_avx.dat' u 1:3 title 'reference (Compiler optimized)' lw 4 \
+   , 'avx.dat' u 1:3 title 'AVX used' lw 4 
+#   , 'stream_avx.dat' u 4:10 title 'AVX intrinsics (store)' lw 4 \
+#   , 'stream_avx_stream.dat' u 4:10 title 'AVX intrinsics (stream)' lw 4
+
+unset arrow
